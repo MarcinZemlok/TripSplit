@@ -1,0 +1,168 @@
+<%- include ("partials/header") -%>
+
+<div class="nav-container">
+    <a href="#home" class="mn-button">Home</a>
+    <a href="#trip" class="mn-button">Add New</a>
+    <a href="#settings" class="mn-button">Settings</a>
+</div>
+
+<!----------------------------------------------------------------------------->
+<!-- SETTINGS                                                               -->
+<!--------------------------------------------------------------------------->
+<div class="tab" id="settings" style="top: 0px">
+    <h1>Settings.</h1>
+
+    <form id="settings-form">
+        <label>Route name</label>
+        <input type="text" name="routeName" placeholder="My route">
+
+        <label>Route start</label>
+        <input type="text" name="routeStart" placeholder="Route start">
+
+        <label>Route end</label>
+        <input type="text" name="routeEnd" placeholder="Route end">
+
+        <label>Distance between locations [km]</label>
+        <input type="number" name="distance" placeholder="0" step=".1">
+
+        <label>Cost per kilometer [zl/km]</label>
+        <input type="number" name="cost" placeholder="0" step=".01">
+
+        <label>Number of passangers</label>
+        <input type="number" name="passengers" placeholder="0" step="1">
+
+        <input type="submit" name="settingsUpdate" value="ADD">
+    </form>
+
+    <h3>Your Routes</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Route Start</th>
+            <th>Route End</th>
+            <th>Distance</th>
+            <th>Cost</th>
+            <th>Passengers</th>
+            <th></th>
+        </tr>
+        <% setting.routes.forEach((r) => { %>
+        <tr>
+            <td><%= r.name %></td>
+            <td><%= r.routeStart %></td>
+            <td><%= r.routeEnd %></td>
+            <td><%= r.distance %> km</td>
+            <td><%= r.cost %> zl</td>
+            <td><%= r.passengers %></td>
+            <td class="settings-button">
+                <button class="settingsDelete" value="<%= r._id %>">-</button>
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+</div>
+
+<!----------------------------------------------------------------------------->
+<!-- TRIP                                                                   -->
+<!--------------------------------------------------------------------------->
+<div class="tab" id="trip" style="top: 0px">
+    <h1>Add new trip.</h1>
+
+    <form id="trip-form">
+        <label>Trip date</label>
+        <input type="date" name="date" value="<%= date %>">
+
+        <label>Route name</label>
+        <select name="routeName">
+            <% setting.routes.forEach((l, i) => { %>
+            <option value="<%= l.name %>" data-index="<%= i %>"><%= l.name %></option>
+            <% }) %>
+        </select>
+
+        <label>Route start</label>
+        <% setting.routes.forEach((l, i) => { %>
+        <input type="text" name="routeStart" value="<%= l.routeStart %>" data-index="<%= i %>">
+        <% }) %>
+
+        <label>Route end</label>
+        <% setting.routes.forEach((l, i) => { %>
+        <input type="text" name="routeEnd" value="<%= l.routeEnd %>" data-index="<%= i %>">
+        <% }) %>
+
+        <label>Distance</label>
+        <% setting.routes.forEach((l, i) => { %>
+        <input type="number" name="distance" value="<%= l.distance %>" step=".1" data-index="<%= i %>">
+        <% }) %>
+
+        <label>Cost</label>
+        <% setting.routes.forEach((l, i) => { %>
+        <input type="number" name="cost" value="<%= l.cost %>" step=".01" data-index="<%= i %>">
+        <% }) %>
+
+        <label>Passengers</label>
+        <% setting.routes.forEach((l, i) => { %>
+        <input type="number" name="passengers" value="<%= l.passengers %>" step="1" data-index="<%= i %>">
+        <% }) %>
+
+        <input type="submit" value="SAVE">
+    </form>
+
+    <h1>Add new payment.</h1>
+
+    <form id="payment-form">
+        <input type="date" name="date" value="<%= date %>">
+        <input type="submit" value="SAVE">
+    </form>
+</div>
+
+<!----------------------------------------------------------------------------->
+<!-- HOME                                                                   -->
+<!--------------------------------------------------------------------------->
+<div class="tab" id="home" style="top: 0px">
+    <div class="summary-container">
+        <div>
+            <h6>Rides cost</h6>
+            <%= summary.cost %> zl
+        </div>
+        <div>
+            <h6>Distance traveled</h6>
+            <%= summary.distance %> km
+        </div>
+        <div>
+            <h6>Rides timespan</h6>
+            <%= summary.timeSpan %>
+        </div>
+    </div>
+
+    <div class="graph-container">
+        <h6>Graph</h6>
+    </div>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Route Start</th>
+            <th>Route End</th>
+            <th>Distance</th>
+            <th>Cost</th>
+            <th>Passengers</th>
+            <th></th>
+        </tr>
+        <% trips.forEach((r) => { %>
+        <tr>
+            <td><%= r.date.toLocaleString("pl-PL", {year: "numeric", month: "2-digit", day: "2-digit"}) %></td>
+            <td><%= r.name %></td>
+            <td><%= r.routeStart %></td>
+            <td><%= r.routeEnd %></td>
+            <td><%= r.distance %> km</td>
+            <td><%= r.cost %> zl</td>
+            <td><%= r.passengers %></td>
+            <td class="settings-button">
+                <button class="homeDelete" value="<%= r._id %>">-</button>
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+</div>
+
+<%- include ("partials/footer") -%>
