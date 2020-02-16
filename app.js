@@ -27,7 +27,8 @@ const routeSchema = mongoose.Schema({
     routeEnd: String,
     passengers: Number,
     distance: Number,
-    cost: Number
+    cost: Number,
+    aCost: Number
 });
 
 const tripSchema = mongoose.Schema({
@@ -44,8 +45,8 @@ const Route = mongoose.model("Route", routeSchema);
 const Trip = mongoose.model("Trip", tripSchema);
 const Setting = mongoose.model("Setting", settingSchema);
 
-var trips = [];
-var setting = null;
+// var trips = [];
+// var setting = null;
 
 ///////////////////////////////////////////////////////////////////////////////
 // FUNCTIONALITIES                                                         ///
@@ -56,35 +57,6 @@ function connectDB() {
 
 function disconnectDB() {
     mongoose.connection.close();
-}
-
-function processSettings(data) {
-    if (data.routeDelete) {
-        console.log("Removing route: " + data.routeDelete);
-        const _id = data.routeDelete;
-
-        setting.routes.forEach((e, i) => {
-            if (e._id == _id) {
-                setting.routes.splice(i, 1);
-            }
-        });
-
-    } else {
-        console.log("Adding new route:");
-
-        const route = new Route({
-            name: data.routeName,
-            routeStart: data.routeStart,
-            routeEnd: data.routeEnd,
-            distance: data.distance,
-            cost: data.cost,
-            passengers: data.passengers
-        });
-
-        setting.routes.push(route);
-    }
-
-    return setting.save();
 }
 
 function toodayString() {
@@ -102,7 +74,7 @@ function toodayString() {
     return `${year}-${month}-${day}`;
 }
 
-function computeSummary() {
+function computeSummary(trips) {
     const summary = {
         distance: 0,
         cost: 0,
@@ -139,10 +111,13 @@ function computeSummary() {
 ///////////////////////////////////////////////////////////////////////////////
 // CALLBACKS                                                               ///
 /////////////////////////////////////////////////////////////////////////////
-async function init() {
-    connectDB();
+/********/
+/* ROOT */
+/********/
+function initDefault() {
+    // connectDB();
 
-    await new Promise(resolve => {
+    return new Promise(resolve => { // Add default setting
         Setting.countDocuments(null, (err, dbres) => {
             if (err) {
                 console.log(err);
@@ -154,10 +129,11 @@ async function init() {
                     routeEnd: "London",
                     passengers: "5",
                     distance: 5567,
-                    cost: 0
+                    cost: 0,
+                    aCost: 0
                 });
 
-                setting = new Setting({
+                const setting = new Setting({
                     routes: [route]
                 });
 
@@ -169,37 +145,42 @@ async function init() {
         })
     });
 
-    await new Promise(resolve => {
-        Setting.find(null, (err, dbres) => {
-            if (err) {
-                console.log(err);
-            } else {
-                setting = dbres[0];
-            }
-            resolve();
-        })
-    });
-
-    await new Promise(resolve => {
-        Trip.find({ payed: false }).sort([["trip.date", -1]]).exec((err, dbres) => {
-            if (err) {
-                console.log(err);
-            } else if (dbres) {
-                trips = dbres;
-            }
-            resolve();
-        });
-    });
-
-    disconnectDB();
+    // disconnectDB();
 }
 
 async function get(req, res) {
-    await init();
+
+    connectDB();
+
+    await initDefault();
+
+    const setting = await new Promise(resolve => { // Get settings
+        Setting.findOne(null, (err, obj) => {
+            if (err) {
+                console.log(err);
+
+            } else {
+                resolve(obj);
+            }
+        })
+    });
+
+    const trips = await new Promise(resolve => { // Get trips
+        Trip.find({ payed: false }, (err, obj) => {
+            if (err) {
+                console.log(err);
+
+            } else {
+                resolve(obj.sort([["trip.date", -1]]));
+            }
+        })
+    });
+
+    disconnectDB();
 
     let date = toodayString();
 
-    const summary = computeSummary();
+    const summary = computeSummary(trips);
 
     res.render('index', {
         trips: trips,
@@ -209,47 +190,6 @@ async function get(req, res) {
     });
 }
 
-async function post(req, res) {
-
-    connectDB();
-
-    let data = req.body;
-
-    if (req.params.site == "settings") await processSettings(data);
-    else if (req.params.site == "add") {
-        if (data.passengers) {
-
-            const trip = new Trip({
-                routeStart: data.routeStart,
-                routeEnd: data.routeEnd,
-                passengers: data.passengers,
-                date: data.date,
-                distance: 53,
-                cost: 22,
-                payed: false
-            });
-
-            await trip.save();
-        } else {
-
-            await Trip.updateMany(
-                { $and: [{ payed: false }, { date: { $lt: data.date } }] },
-                { payed: true },
-                (err, dbres) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log("Added new payment.");
-                        console.log(dbres);
-                    }
-                });
-        }
-    }
-
-    disconnectDB();
-    res.redirect("/");
-}
-
 /************/
 /* SETTINGS */
 /************/
@@ -257,15 +197,42 @@ async function post(req, res) {
 
 /* HANDLERS */
 async function settingsUpdate(req, res) {
-    console.log(req.body);
 
-    res.send("[OK] settingsUpdate");
+    const newSettinsRoute = new Route({
+        name: req.body.routeName,
+        routeStart: req.body.routeStart,
+        routeEnd: req.body.routeEnd,
+        passengers: req.body.passengers,
+        distance: req.body.distance,
+        cost: req.body.cost,
+        aCost: req.body.aCost
+    });
+
+    connectDB()
+
+    await Setting.updateOne(
+        null,
+        { $push: { routes: newSettinsRoute } }
+    );
+
+    disconnectDB();
+
+    res.status(200).send(newSettinsRoute);
 }
 
 async function settingsDelete(req, res) {
-    console.log(req.body);
+    const idToRemove = req.body.settingsDelete;
 
-    res.send("[OK] settingsDelete");
+    connectDB();
+
+    await Setting.updateOne(
+        null,
+        { $pull: { routes: { _id: idToRemove } } }
+    );
+
+    disconnectDB();
+
+    res.send(idToRemove);
 }
 
 /********/
@@ -274,10 +241,34 @@ async function settingsDelete(req, res) {
 /* FUNCTIONS */
 
 /* HANDLERS */
-async function tripUpdate(req, res) {
-    console.log(req.body);
+async function tripAdd(req, res) {
 
-    res.send("[OK] tripUpdate");
+    req.body.passengers = Number(req.body.passengers);
+    req.body.aCost = Number(req.body.aCost);
+
+    const cost = ((req.body.cost * req.body.distance + req.body.aCost) / req.body.passengers);
+
+    const newTrip = Trip({
+        date: req.body.date,
+        payed: false,
+        route: new Route({
+            name: req.body.routeName,
+            routeStart: req.body.routeStart,
+            routeEnd: req.body.routeEnd,
+            passengers: req.body.passengers,
+            distance: req.body.distance,
+            cost: Math.round((cost + Number.EPSILON) * 100) / 100,
+            aCost: req.body.aCost
+        })
+    });
+
+    connectDB();
+
+    await newTrip.save();
+
+    disconnectDB();
+
+    res.status(200).send(newTrip);
 }
 
 /***********/
@@ -287,7 +278,15 @@ async function tripUpdate(req, res) {
 
 /* HANDLERS */
 async function paymentUpdate(req, res) {
-    console.log(req.body);
+
+    connectDB();
+
+    await Trip.updateMany(
+        { date: { $lte: req.body.date } },
+        { payed: true }
+    );
+
+    disconnectDB();
 
     res.send("[OK] paymentUpdate");
 }
@@ -299,9 +298,15 @@ async function paymentUpdate(req, res) {
 
 /* HANDLERS */
 async function homeDelete(req, res) {
-    console.log(req.body);
+    const idToRemove = req.body.homeDelete;
 
-    res.send("[OK] homeDelete");
+    connectDB();
+
+    await Trip.findByIdAndDelete(idToRemove);
+
+    disconnectDB();
+
+    res.status(200).send(idToRemove);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -316,20 +321,20 @@ app.get("/", get);
 /* SETTINGS */
 /************/
 app.route("/settings")
-    .post(update.none(), settingsUpdate)
+    .put(update.none(), settingsUpdate)
     .delete(update.none(), settingsDelete);
 
 /********/
 /* TRIP */
 /********/
 app.route("/trip")
-    .post(update.none(), tripUpdate);
+    .post(update.none(), tripAdd);
 
 /***********/
 /* PAYMENT */
 /***********/
 app.route("/payment")
-    .post(update.none(), paymentUpdate);
+    .put(update.none(), paymentUpdate);
 
 /********/
 /* HOME */

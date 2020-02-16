@@ -5,8 +5,6 @@ function tabScroll(e) {
     const th = this.offsetHeight;
     const bh = document.querySelector("body").offsetHeight;
 
-    console.log(th, bh);
-
     let toff = Number(this.style.top.slice(0, -2));
 
     toff -= e.deltaY / Math.abs(e.deltaY) * 28;
@@ -43,13 +41,45 @@ function httpRequest(reqType, url, data, callback) {
 const settingsUpdateForm = document.querySelector("#settings-form");
 const settingsDeleteButtons = document.querySelectorAll(".settingsDelete");
 
+var i = 0;
 /* FUNCTIONS */
 function settingsUpdateDocument() {
-    console.log(this.responseText);
+
+    if (this.readyState === 4 && this.status === 200) {
+
+        const res = JSON.parse(this.responseText);
+
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `<td>${res.name}</td>
+                            <td>${res.routeStart}</td>
+                            <td>${res.routeEnd}</td>
+                            <td>${res.distance} km</td>
+                            <td>${res.cost} zl</td>
+                            <td>${res.aCost} zl</td>
+                            <td>${res.passengers}</td>
+                            <td class="settings-button">
+                                <button class="settingsDelete" value="${res._id}">-</button>
+                            </td>`;
+
+        newRow.querySelector("button").addEventListener("click", settingsDelete);
+
+        document.querySelector("#settings tbody").appendChild(newRow);
+    }
 }
 
 function settingsDeleteDocument() {
-    console.log(this.response);
+
+    if (this.readyState === 4 && this.status === 200) {
+
+        const removeButton = document.querySelector(`#settings button[value="${this.responseText}"]`);
+
+        const removeRow = removeButton.parentNode.parentNode;
+
+        const settingsTable = removeRow.parentNode;
+
+        settingsTable.removeChild(removeRow);
+    }
 }
 
 /* HANDLERS */
@@ -58,7 +88,7 @@ async function settingsUpdate() {
 
     const data = new FormData(this);
 
-    httpRequest("POST", "/settings", data, settingsUpdateDocument);
+    httpRequest("PUT", "/settings", data, settingsUpdateDocument);
 }
 
 async function settingsDelete() {
@@ -80,24 +110,47 @@ settingsDeleteButtons.forEach((e) => {
 /* TRIP */
 /********/
 /* CONSTANTS */
-const tripUpdateForm = document.querySelector("#trip-form");
+const tripAddForm = document.querySelector("#trip-form");
 
 /* FUNCTIONS */
-function tripUpdateDocument() {
-    console.log(this.responseText);
+function tripAddDocument() {
+
+    if (this.readyState === 4 && this.status === 200) {
+
+        const res = JSON.parse(this.responseText);
+
+        const date = new Date(res.date).toLocaleString("pl-PL", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `<td>${date}</td>
+                            <td>${res.route.name}</td>
+                            <td>${res.route.routeStart}</td>
+                            <td>${res.route.routeEnd}</td>
+                            <td>${res.route.distance} km</td>
+                            <td>${res.route.cost} zl</td>
+                            <td>${res.route.passengers}</td>
+                            <td class="settings-button">
+                                <button class="homeDelete" value="${res._id}">-</button>
+                            </td>`;
+
+        newRow.querySelector("button").addEventListener("click", homeDelete);
+
+        document.querySelector("#home tbody").appendChild(newRow);
+    }
 }
 
 /* HANDLERS */
-async function tripUpdate() {
+async function tripAdd() {
     event.returnValue = false;
 
     const data = new FormData(this);
 
-    httpRequest("POST", "/trip", data, tripUpdateDocument);
+    httpRequest("POST", "/trip", data, tripAddDocument);
 }
 
 /* EVENT LISTENERS */
-tripUpdateForm.addEventListener("submit", tripUpdate);
+tripAddForm.addEventListener("submit", tripAdd);
 
 /***********/
 /* PAYMENT */
@@ -107,7 +160,9 @@ const paymentUpdateForm = document.querySelector("#payment-form");
 
 /* FUNCTIONS */
 function paymentUpdateDocument() {
-    console.log(this.responseText);
+    if (this.readyState === 4 && this.status === 200) {
+        location.reload();
+    }
 }
 
 /* HANDLERS */
@@ -116,7 +171,7 @@ async function paymentUpdate() {
 
     const data = new FormData(this);
 
-    httpRequest("POST", "/payment", data, paymentUpdateDocument);
+    httpRequest("PUT", "/payment", data, paymentUpdateDocument);
 }
 
 /* EVENT LISTENERS */
@@ -130,7 +185,17 @@ const homeDeleteButtons = document.querySelectorAll(".homeDelete");
 
 /* FUNCTIONS */
 function homeDeleteDocument() {
-    console.log(this.response);
+
+    if (this.readyState === 4 && this.status === 200) {
+
+        const removeButton = document.querySelector(`#home button[value="${this.responseText}"]`);
+
+        const removeRow = removeButton.parentNode.parentNode;
+
+        const settingsTable = removeRow.parentNode;
+
+        settingsTable.removeChild(removeRow);
+    }
 }
 
 /* HANDLERS */
