@@ -166,14 +166,16 @@ async function get(req, res) {
     });
 
     const trips = await new Promise(resolve => { // Get trips
-        Trip.find({ payed: false }, (err, obj) => {
-            if (err) {
-                console.log(err);
+        Trip.find({ payed: false })
+            .sort([["trip.date", -1]])
+            .exec((err, obj) => {
+                if (err) {
+                    console.log(err);
 
-            } else {
-                resolve(obj.sort([["trip.date", -1]]));
-            }
-        })
+                } else {
+                    resolve(obj);
+                }
+            })
     });
 
     disconnectDB();
