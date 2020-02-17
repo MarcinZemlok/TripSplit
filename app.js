@@ -78,32 +78,50 @@ function computeSummary(trips) {
     const summary = {
         distance: 0,
         cost: 0,
-        timeSpan: ""
+        timeString: ""
     };
 
     if (trips.length === 0) return summary;
 
-    let month = null;
-    summary.timeSpan = "(";
+    let timeObj = new Object();
 
     trips.forEach((t) => {
+
         summary.distance += t.route.distance;
         summary.cost += t.route.cost;
 
-        const dd = t.date.getDate();
-        const mm = t.date.getMonth() + 1;
+        let dd = t.date.getDate();
+        if (dd < 10) dd = "0" + dd;
+        else dd = `${dd}`;
 
-        if (month === null) {
-            month = mm;
+        let mm = t.date.getMonth() + 1;
+        if (mm < 10) mm = "0" + mm;
+        else mm = `${mm}`;
+
+        if (!Object.keys(timeObj).includes(mm)) {
+            timeObj[mm] = [];
         }
-        if (month != mm) {
-            summary.timeSpan += " ) / " + month + " ; ( " + dd;
-            month = mm;
-        } else {
-            summary.timeSpan += " " + dd;
+        if (!timeObj[mm].includes(dd)) {
+            timeObj[mm].push(dd);
         }
+
     });
-    summary.timeSpan += " ) / " + month;
+
+    for (let key in timeObj) {
+        timeObj[key].sort((a, b) => {
+            if (a > b) return 1;
+            else return 0;
+        });
+
+        summary.timeString = "( ";
+        timeObj[key].forEach((d) => {
+            summary.timeString += d + " ";
+        });
+
+        summary.timeString += ") / " + key + " ; ";
+    }
+
+    summary.timeString = summary.timeString.substr(0, summary.timeString.length - 3);
 
     return summary;
 }
