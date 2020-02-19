@@ -2,16 +2,29 @@
 // TAB SCROLL                                                              ///
 /////////////////////////////////////////////////////////////////////////////
 function tabScroll(e) {
-    const th = this.offsetHeight;
+    let target = this;
+    if(e.fakeTarget) {
+        target = e.fakeTarget;
+    }
+
+    const th = target.offsetHeight;
     const bh = document.querySelector("body").offsetHeight;
 
-    let toff = Number(this.style.top.slice(0, -2));
+    let toff = Number(target.style.top.slice(0, -2));
 
     toff -= e.deltaY / Math.abs(e.deltaY) * 28;
 
-    if (toff > 0) toff = 0; else if (toff < (bh - th)) toff = (bh - th);
+    let ret = false;
+    if (toff > 0) {
+        toff = 0;
+        ret = true;
+    } else if (toff < (bh - th)) {
+        toff = (bh - th);
+    }
 
-    this.style.top = "" + toff + "px";
+    target.style.top = "" + toff + "px";
+
+    return ret;
 }
 
 document.querySelectorAll(".tab").forEach((c) => {
@@ -19,7 +32,64 @@ document.querySelectorAll(".tab").forEach((c) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// FORMS                                                                   ///
+// RESPONSIVNESS                                                           ///
+/////////////////////////////////////////////////////////////////////////////
+/**************/
+/* NAVIGATION */
+/**************/
+/* VARIABLES */
+var touchStartX = null;
+var touchCurrentX = null;
+var touchStartY = null;
+var touchCurrentY = null;
+var lastDel = null;
+
+/* EVENT LISTENERS */
+document.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].screenX;
+    touchStartY = e.touches[0].screenY;
+});
+document.addEventListener("touchmove", (e) => {
+    touchCurrentX = e.touches[0].screenX;
+    touchCurrentY = e.touches[0].screenY;
+});
+document.addEventListener("touchend", (e) => {
+    const delX = touchStartX - touchCurrentX;
+    const delY = touchStartY - touchCurrentY;
+    
+    const nav = document.querySelector(".nav-container");
+
+    if(delX < -100) {
+        console.log(delX);
+        nav.classList.add("nav-container-visible");
+    } else if(delX > 100) {
+        console.log(delX);
+        nav.classList.remove("nav-container-visible");
+    }
+
+    let target = e.target;
+    while(! target.classList.contains("tab")) {
+        target = target.parentNode;
+    }
+
+    const fakeE = {
+        deltaY: delY,
+        fakeTarget: target
+    };
+    if(tabScroll(fakeE) && delY < -100) {
+        console.log(delY);
+        location.reload()
+    }
+
+    touchStartX = null;
+    touchCurrentX = null;
+    touchStartY = null;
+    touchCurrentY = null;
+    lastDel = null;
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// API                                                                     ///
 /////////////////////////////////////////////////////////////////////////////
 /********/
 /* MISC */

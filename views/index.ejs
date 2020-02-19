@@ -41,23 +41,23 @@
     <table>
         <tr>
             <th>Name</th>
-            <th>Route Start</th>
-            <th>Route End</th>
-            <th>Distance</th>
+            <th class="not-mobile">Route Start</th>
+            <th class="not-mobile">Route End</th>
+            <th class="not-mobile">Distance</th>
             <th>Cost</th>
             <th>Additional Cost</th>
-            <th>Passengers</th>
+            <th class="not-mobile">Passengers</th>
             <th></th>
         </tr>
         <% setting.routes.forEach((r) => { %>
         <tr>
             <td><%= r.name %></td>
-            <td><%= r.routeStart %></td>
-            <td><%= r.routeEnd %></td>
-            <td><%= r.distance %> km</td>
+            <td class="not-mobile"><%= r.routeStart %></td>
+            <td class="not-mobile"><%= r.routeEnd %></td>
+            <td class="not-mobile"><%= r.distance %> km</td>
             <td><%= r.cost %> zl</td>
             <td><%= r.aCost %> zl</td>
-            <td><%= r.passengers %></td>
+            <td class="not-mobile"><%= r.passengers %></td>
             <td class="settings-button">
                 <button class="settingsDelete" value="<%= r._id %>">-</button>
             </td>
@@ -139,22 +139,22 @@
         <tr>
             <th>Date</th>
             <th>Name</th>
-            <th>Route Start</th>
-            <th>Route End</th>
-            <th>Distance</th>
+            <th class="not-mobile">Route Start</th>
+            <th class="not-mobile">Route End</th>
+            <th class="not-mobile">Distance</th>
             <th>Cost</th>
-            <th>Passengers</th>
+            <th class="not-mobile">Passengers</th>
             <th></th>
         </tr>
         <% trips.forEach((r) => { %>
         <tr>
             <td><%= r.date.toLocaleString("pl-PL", {year: "numeric", month: "2-digit", day: "2-digit"}) %></td>
             <td><%= r.route.name %></td>
-            <td><%= r.route.routeStart %></td>
-            <td><%= r.route.routeEnd %></td>
-            <td><%= r.route.distance %> km</td>
+            <td class="not-mobile"><%= r.route.routeStart %></td>
+            <td class="not-mobile"><%= r.route.routeEnd %></td>
+            <td class="not-mobile"><%= r.route.distance %> km</td>
             <td><%= r.route.cost %> zl</td>
-            <td><%= r.route.passengers %></td>
+            <td class="not-mobile"><%= r.route.passengers %></td>
             <td class="settings-button">
                 <button class="homeDelete" value="<%= r._id %>">-</button>
             </td>

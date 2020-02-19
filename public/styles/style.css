@@ -146,6 +146,13 @@ tr:nth-child(even) {
     display: none;
 }
 
+/**********/
+/* TABLES */
+/**********/
+/* .not-mobile{
+    display: block;
+} */
+
 /* SETTINGS */
 
 .settings-button {
@@ -207,4 +214,48 @@ tr:nth-child(even) .settings-button button:hover {
 
 .graph-container {
     padding: 1rem;
+}
+
+/*///////////////////////////////////////////////////////////////////////////*/
+/*/ MEDIA QUERRY                                                           /*/
+/*/////////////////////////////////////////////////////////////////////////*/
+@media screen and (max-width: 680px) {
+    /**********/
+    /* TABLES */
+    /**********/
+    td, th {
+        font-size: .8rem;
+    }
+
+    .not-mobile{
+        display: none;
+    }
+    
+    /************************/
+    /* NAVIGATION CONTAINER */
+    /************************/
+    .nav-container {
+        max-width: 0;
+
+        position: absolute;
+        z-index: 1;
+
+        display: none;
+        transform: max-width .2s;
+    }
+
+    .nav-container-visible {
+        max-width: 100vw;
+     
+        display: block;
+    }
+    
+    /*********************/
+    /* summary CONTAINER */
+    /*********************/
+    .summary-container div {
+        padding: .5rem;
+    
+        font-size: 1rem;
+    }
 }

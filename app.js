@@ -109,7 +109,7 @@ function computeSummary(trips) {
 
     for (let key in timeObj) {
         timeObj[key].sort((a, b) => {
-            if (a > b) return 1;
+            if (a < b) return 1;
             else return 0;
         });
 
