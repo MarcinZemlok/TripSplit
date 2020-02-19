@@ -1,3 +1,17 @@
+/*/////////////////////////////////////////////////////////////////////////////
+///                                TripSplit                                ///
+//===========================================================================//
+//        Author: Marcin Żemlok
+//         Email: marcinzemlok@gmail.com
+//       Version: 1.0
+//
+//   Description: TripSplit application server side functionality.
+//
+// Creation date: 19/02/2020
+================================= CHANGE LOG ==================================
+// [19/02/2020]        Marcin Żemlok
+       Initial change log entry.                                             //
+/////////////////////////////////////////////////////////////////////////////*/
 const express = require("express");
 const multer = require("multer");
 const ejs = require("ejs");
