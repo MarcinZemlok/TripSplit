@@ -10,8 +10,16 @@
 // Creation date: 19/02/2020
 ================================== CHANGE LOG ==================================
 // [19/02/2020]        Marcin Żemlok
-       Initial change log entry.                                              //
+        Initial change log entry.                                            ///
+--------------------------------------------------------------------------------
+// [22/02/2020]        Marcin Żemlok
+        * Restructurized document.
+        * Fixed tabs scrolling.
+        * Changed the way that app looks on desktop and mobile.              ///
 //////////////////////////////////////////////////////////////////////////////*/
+/*///////////////////////////////////////////////////////////////////////////*/
+/*/ GENERAL                                                                /*/
+/*/////////////////////////////////////////////////////////////////////////*/
 *, *::before, *::after {
     border: none;
     box-sizing: border-box;
@@ -41,12 +49,6 @@ body {
     overflow: hidden;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 h1, h3, form {
     margin: 2rem 0;
 }
@@ -55,41 +57,16 @@ h6 {
     font-size: 1rem;
 }
 
-input, label, select, tr {
-    padding: 3px;
-    width: 300px;
-
-    background-color: white;
-    border: 1px solid #bada55;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-input:last-child, select:last-child {
-    border-radius: 0 0 32px 32px;
-}
-
-input:first-child, select:first-child {
-    border-radius: 32px 32px 0 0;
-}
-
-label, input[type=submit] {
-    background-color: #bada55;
-}
-
-input[type=submit]:hover, input[type=date]:hover, select:hover {
-    cursor: pointer;
-}
-
-label:first-child {
-    border-radius: 32px 32px 0 0;
-}
-
 table {
-    width: 100%;
+    /* width: 100%; */
+    max-width: 100vw;
+
+    margin: 0 auto;
 
     text-align: left;
     border-collapse: collapse;
+
+    box-shadow: 0 1px 2px 0 black;
 }
 
 th input {
@@ -102,19 +79,88 @@ th input {
 }
 
 td, th {
-    padding: 3px;
+    padding: 3px 5px;
 }
 
 th {
     background-color: white;
 }
 
-tr:nth-child(even) {
+tr:nth-child(odd) {
     background-color: #bada55;
 }
 
-/* NAVIGATION */
+/*///////////////////////////////////////////////////////////////////////////*/
+/*/ FORMS                                                                  /*/
+/*/////////////////////////////////////////////////////////////////////////*/
+/**********/
+/* COMMON */
+/**********/
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
+input {
+    padding: 3px;
+    /* min-width: 300px; */
+
+    background-color: white;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+input[type=submit] {
+    padding: 5px 10px;
+    margin-top: 10px;
+
+    background-color: #bada55;
+    box-shadow: 0 1px 2px 0 black;
+    text-align: center;
+}
+
+input[type=submit]:hover, input[type=date]:hover, select:hover {
+    cursor: pointer;
+}
+
+/*********/
+/* TABLE */
+/*********/
+form table {
+    width: auto;
+    max-width: 100vw;
+
+    text-align: left;
+    border-collapse: collapse;
+}
+
+form table input, form table select {
+    min-width: 0;
+    width: 100%;
+}
+
+form td, form tr {
+    width: auto;
+
+    background-color: white;
+}
+
+/*************/
+/* SPECIFFIC */
+/*************/
+#payment-form input[type="date"] {
+    box-shadow: 0 1px 2px 0 black;
+}
+
+form td:first-child {
+    background-color: #bada55;
+    text-align: right;
+}
+
+/*///////////////////////////////////////////////////////////////////////////*/
+/*/ NAVBAR                                                                 /*/
+/*/////////////////////////////////////////////////////////////////////////*/
 .nav-container {
     height: 100vh;
 
@@ -132,8 +178,12 @@ tr:nth-child(even) {
     white-space: nowrap;
 }
 
-/* TABS */
-
+/*///////////////////////////////////////////////////////////////////////////*/
+/*/ TABS                                                                   /*/
+/*/////////////////////////////////////////////////////////////////////////*/
+/**********/
+/* COMMON */
+/**********/
 .tab {
     min-height: 100vh;
 
@@ -152,49 +202,16 @@ tr:nth-child(even) {
     display: block;
 }
 
+/********/
+/* HOME */
+/********/
+/* GENERAL */
 #home {
     display: block;
 }
 
 :target ~ #home {
     display: none;
-}
-
-/**********/
-/* TABLES */
-/**********/
-/* .not-mobile{
-    display: block;
-} */
-
-/* SETTINGS */
-
-.settings-button {
-    width: 28px;
-    min-width: 28px;
-
-    padding: 0;
-}
-
-.settings-button button {
-    line-height: 28px;
-    padding: 0 3px;
-    width: 100%;
-
-    background-color: white;
-}
-
-.settings-button button:hover {
-    background-color: #bada55;
-    cursor: pointer;
-}
-
-tr:nth-child(even) .settings-button button {
-    background-color: #bada55;
-}
-
-tr:nth-child(even) .settings-button button:hover {
-    background-color: white;
 }
 
 /* SUMMARY */
@@ -230,46 +247,91 @@ tr:nth-child(even) .settings-button button:hover {
     padding: 1rem;
 }
 
+/************/
+/* SETTINGS */
+/************/
+.settings-button {
+    width: 28px;
+    min-width: 28px;
+
+    padding: 0;
+}
+
+.settings-button button {
+    line-height: 28px;
+    padding: 0 3px;
+    width: 100%;
+
+    background-color: white;
+}
+
+.settings-button button:hover {
+    background-color: #bada55;
+    cursor: pointer;
+}
+
+tr:nth-child(odd) .settings-button button {
+    background-color: #bada55;
+}
+
+tr:nth-child(odd) .settings-button button:hover {
+    background-color: white;
+}
+
 /*///////////////////////////////////////////////////////////////////////////*/
 /*/ MEDIA QUERRY                                                           /*/
 /*/////////////////////////////////////////////////////////////////////////*/
 @media screen and (max-width: 680px) {
+    /********/
+    /* BODY */
+    /********/
+    body {
+        min-height: 100vh;
+
+        display: block;
+
+        overflow-y: scroll;
+    }
+
     /**********/
     /* TABLES */
     /**********/
-    td, th {
-        font-size: .8rem;
+    table, form table {
+        width: 100%;
     }
 
     .not-mobile{
         display: none;
     }
-    
+
     /************************/
     /* NAVIGATION CONTAINER */
     /************************/
     .nav-container {
-        max-width: 0;
+        width: 0;
 
-        position: absolute;
+        position: fixed;
+        top: 0;
+        left: 0;
         z-index: 1;
 
-        display: none;
-        transform: max-width .2s;
+        /* display: none; */
+        overflow: hidden;
+        transition: width 1s;
     }
 
     .nav-container-visible {
-        max-width: 100vw;
-     
-        display: block;
+        width: auto;
+
+        box-shadow: 0 0 0 100vw rgba(0, 0, 0, .7);
     }
-    
+
     /*********************/
     /* summary CONTAINER */
     /*********************/
     .summary-container div {
         padding: .5rem;
-    
+
         font-size: 1rem;
     }
 }

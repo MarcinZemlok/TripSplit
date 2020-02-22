@@ -1,0 +1,14 @@
+<% trips.forEach((r) => { %>
+<tr>
+    <td><%= r.date.toLocaleString("pl-PL", {year: "numeric", month: "2-digit", day: "2-digit"}) %></td>
+    <td><%= r.route.name %></td>
+    <td class="not-mobile"><%= r.route.routeStart %></td>
+    <td class="not-mobile"><%= r.route.routeEnd %></td>
+    <td class="not-mobile"><%= r.route.distance %> km</td>
+    <td><%= r.route.cost %> zl</td>
+    <td class="not-mobile"><%= r.route.passengers %></td>
+    <td class="settings-button">
+        <button class="homeDelete" value="<%= r._id %>">&#x2796</button>
+    </td>
+</tr>
+<% }) %>

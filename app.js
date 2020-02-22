@@ -1,17 +1,21 @@
-/*/////////////////////////////////////////////////////////////////////////////
-///                                TripSplit                                ///
-//===========================================================================//
+/*//////////////////////////////////////////////////////////////////////////////
+///                                TripSplit                                 ///
+//============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.0
+//       Version: 1.1
 //
 //   Description: TripSplit application server side functionality.
 //
 // Creation date: 19/02/2020
-================================= CHANGE LOG ==================================
+================================== CHANGE LOG ==================================
 // [19/02/2020]        Marcin Żemlok
-       Initial change log entry.                                             //
-/////////////////////////////////////////////////////////////////////////////*/
+       Initial change log entry.                                             ///
+--------------------------------------------------------------------------------
+// [22/02/2020]        Marcin Żemlok
+       Changed the way that new items are send to client. Now full tables are
+       rendered by EJS and send.                                             ///
+//////////////////////////////////////////////////////////////////////////////*/
 const express = require("express");
 const multer = require("multer");
 const ejs = require("ejs");
@@ -212,7 +216,7 @@ async function get(req, res) {
 
     disconnectDB();
 
-    let date = toodayString();
+    const date = toodayString();
 
     const summary = computeSummary(trips);
 
@@ -249,9 +253,23 @@ async function settingsUpdate(req, res) {
         { $push: { routes: newSettinsRoute } }
     );
 
+    const setting = await new Promise(resolve => { // Get settings
+        Setting.findOne(null, (err, obj) => {
+            if (err) {
+                console.log(err);
+
+            } else {
+                resolve(obj);
+            }
+        })
+    });
+
     disconnectDB();
 
-    res.status(200).send(newSettinsRoute);
+    // res.status(200).send(newSettinsRoute);
+    res.render('partials/routes', {
+        setting: setting
+    });
 }
 
 async function settingsDelete(req, res) {
@@ -300,9 +318,39 @@ async function tripAdd(req, res) {
 
     await newTrip.save();
 
+    const trips = await new Promise(resolve => { // Get trips
+        Trip.find({ payed: false })
+            .sort([["trip.date", -1]])
+            .exec((err, obj) => {
+                if (err) {
+                    console.log(err);
+
+                } else {
+                    resolve(obj);
+                }
+            })
+    });
+
     disconnectDB();
 
-    res.status(200).send(newTrip);
+    const date = toodayString();
+
+    const summary = computeSummary(trips);
+
+    const resJSON = {
+        trips: "",
+        summary: ""
+    };
+
+    resJSON.trips = await ejs.renderFile(__dirname + '/views/partials/trips.ejs', {
+        trips: trips
+    });
+    resJSON.summary = await ejs.renderFile(__dirname + '/views/partials/summary.ejs', {
+        date: date,
+        summary: summary
+    });
+
+    res.status(200).send(resJSON);
 }
 
 /***********/

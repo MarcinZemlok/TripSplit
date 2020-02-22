@@ -3,21 +3,26 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.0
+//       Version: 1.1
 //
 //   Description: TripSplit application client side functionality.
 //
 // Creation date: 19/02/2020
 ================================== CHANGE LOG ==================================
 // [19/02/2020]        Marcin Żemlok
-       Initial change log entry. Added mobile responsivnes.                   //
+        Initial change log entry. Added mobile responsivnes.                 ///
+--------------------------------------------------------------------------------
+// [22/02/2020]        Marcin Żemlok
+        * Changed the way that new entries are added. Now whole table body
+         content is recieved.
+        * Added summary update on adding new trip.                           ///
 //////////////////////////////////////////////////////////////////////////////*/
 ///////////////////////////////////////////////////////////////////////////////
 // TAB SCROLL                                                              ///
 /////////////////////////////////////////////////////////////////////////////
 function tabScroll(e) {
     let target = this;
-    if(e.fakeTarget) {
+    if (e.fakeTarget) {
         target = e.fakeTarget;
     }
 
@@ -70,30 +75,28 @@ document.addEventListener("touchmove", (e) => {
 document.addEventListener("touchend", (e) => {
     const delX = touchStartX - touchCurrentX;
     const delY = touchStartY - touchCurrentY;
-    
+
     const nav = document.querySelector(".nav-container");
 
-    if(delX < -100) {
-        console.log(delX);
+    if (delX < -100) {
         nav.classList.add("nav-container-visible");
-    } else if(delX > 100) {
-        console.log(delX);
+    } else if (delX > 100) {
         nav.classList.remove("nav-container-visible");
     }
 
-    let target = e.target;
-    while(! target.classList.contains("tab")) {
-        target = target.parentNode;
-    }
+    // let target = e.target;
+    // while(! target.classList.contains("tab")) {
+    //     target = target.parentNode;
+    // }
 
-    const fakeE = {
-        deltaY: delY,
-        fakeTarget: target
-    };
-    if(tabScroll(fakeE) && delY < -100) {
-        console.log(delY);
-        location.reload()
-    }
+    // const fakeE = {
+    //     deltaY: delY,
+    //     fakeTarget: target
+    // };
+    // if(tabScroll(fakeE) && delY < -100) {
+    //     console.log(delY);
+    //     location.reload()
+    // }
 
     touchStartX = null;
     touchCurrentX = null;
@@ -131,24 +134,7 @@ function settingsUpdateDocument() {
 
     if (this.readyState === 4 && this.status === 200) {
 
-        const res = JSON.parse(this.responseText);
-
-        const newRow = document.createElement("tr");
-
-        newRow.innerHTML = `<td>${res.name}</td>
-                            <td>${res.routeStart}</td>
-                            <td>${res.routeEnd}</td>
-                            <td>${res.distance} km</td>
-                            <td>${res.cost} zl</td>
-                            <td>${res.aCost} zl</td>
-                            <td>${res.passengers}</td>
-                            <td class="settings-button">
-                                <button class="settingsDelete" value="${res._id}">-</button>
-                            </td>`;
-
-        newRow.querySelector("button").addEventListener("click", settingsDelete);
-
-        document.querySelector("#settings tbody").appendChild(newRow);
+        document.querySelector("#settings > table tbody").innerHTML = this.responseText;
     }
 }
 
@@ -200,27 +186,13 @@ const tripAddForm = document.querySelector("#trip-form");
 function tripAddDocument() {
 
     if (this.readyState === 4 && this.status === 200) {
-
         const res = JSON.parse(this.responseText);
 
-        const date = new Date(res.date).toLocaleString("pl-PL", { year: "numeric", month: "2-digit", day: "2-digit" });
+        document.querySelector("#home > table tbody").innerHTML = res.trips;
+        document.querySelector("#home > .summary-container").innerHTML = res.summary;
 
-        const newRow = document.createElement("tr");
 
-        newRow.innerHTML = `<td>${date}</td>
-                            <td>${res.route.name}</td>
-                            <td>${res.route.routeStart}</td>
-                            <td>${res.route.routeEnd}</td>
-                            <td>${res.route.distance} km</td>
-                            <td>${res.route.cost} zl</td>
-                            <td>${res.route.passengers}</td>
-                            <td class="settings-button">
-                                <button class="homeDelete" value="${res._id}">-</button>
-                            </td>`;
-
-        newRow.querySelector("button").addEventListener("click", homeDelete);
-
-        document.querySelector("#home tbody").appendChild(newRow);
+        alert("Trip has been added \u2705");
     }
 }
 
@@ -245,6 +217,7 @@ const paymentUpdateForm = document.querySelector("#payment-form");
 /* FUNCTIONS */
 function paymentUpdateDocument() {
     if (this.readyState === 4 && this.status === 200) {
+        alert("Payment has been saved \u2705");
         location.reload();
     }
 }
