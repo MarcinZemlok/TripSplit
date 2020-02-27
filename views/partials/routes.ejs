@@ -1,12 +1,12 @@
 <% setting.routes.forEach((r) => { %>
 <tr>
     <td><%= r.name %></td>
-    <td class="not-mobile"><%= r.routeStart %></td>
-    <td class="not-mobile"><%= r.routeEnd %></td>
-    <td class="not-mobile"><%= r.distance %> km</td>
-    <td><%= r.cost %> zl</td>
-    <td><%= r.aCost %> zl</td>
-    <td class="not-mobile"><%= r.passengers %></td>
+    <td class="not-mobile" data-value="<%= r.routeStart %>"><%= r.routeStart %></td>
+    <td class="not-mobile" data-value="<%= r.routeEnd %>"><%= r.routeEnd %></td>
+    <td class="not-mobile" data-value="<%= r.distance %>"><%= r.distance %> km</td>
+    <td data-value="<%= r.cost %>"><%= r.cost %> zl</td>
+    <td data-value="<%= r.aCost %>"><%= r.aCost %> zl</td>
+    <td class="not-mobile" data-value="<%= r.passengers %>"><%= r.passengers %></td>
     <td class="settings-button">
         <button class="settingsDelete" value="<%= r._id %>">&#x2796</button>
     </td>

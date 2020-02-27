@@ -29,7 +29,7 @@
 <!-- SETTINGS                                                               -->
 <!--------------------------------------------------------------------------->
 <div class="tab" id="settings" style="top: 0px">
-    <h1>Settings.</h1>
+    <h1>Settings</h1>
 
     <form id="settings-form">
         <table>
@@ -120,7 +120,7 @@
 <!-- TRIP                                                                   -->
 <!--------------------------------------------------------------------------->
 <div class="tab" id="trip" style="top: 0px">
-    <h1>Add new trip.</h1>
+    <h1>Add new trip</h1>
 
     <form id="trip-form">
         <table>
@@ -139,8 +139,8 @@
                     </td>
                     <td>
                         <select name="routeName">
-                            <% setting.routes.forEach((l, i) => { %>
-                            <option value="<%= l.name %>" data-index="<%= i %>"><%= l.name %></option>
+                            <% setting.routes.forEach((l) => { %>
+                            <option value="<%= l.name %>"><%= l.name %></option>
                             <% }) %>
                         </select>
                     </td>
@@ -203,7 +203,7 @@
         <input type="submit" value="SAVE">
     </form>
 
-    <h1>Add new payment.</h1>
+    <h1>Add new payment</h1>
 
     <form id="payment-form">
         <input type="date" name="date" value="<%= date %>">

@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.1
+//       Version: 1.2
 //
 //   Description: TripSplit application client side functionality.
 //
@@ -16,6 +16,10 @@
         * Changed the way that new entries are added. Now whole table body
          content is recieved.
         * Added summary update on adding new trip.                           ///
+--------------------------------------------------------------------------------
+// [27/02/2020]        Marcin Żemlok
+        Added trip select in trip-add form. The form input fields are now
+        updating based on selected name.                                     ///
 //////////////////////////////////////////////////////////////////////////////*/
 ///////////////////////////////////////////////////////////////////////////////
 // TAB SCROLL                                                              ///
@@ -104,6 +108,39 @@ document.addEventListener("touchend", (e) => {
     touchCurrentY = null;
     lastDel = null;
 });
+
+///////////////////////////////////////////////////////////////////////////////
+// TRIP ADD SELECT                                                         ///
+/////////////////////////////////////////////////////////////////////////////
+/*************/
+/* VARIABLES */
+/*************/
+const tripAddSelect = document.querySelector("#trip-form select[name=routeName]");
+
+/************/
+/* HANDLERS */
+/************/
+async function tripSelect() { // Set rest of the form input values acording to select.
+    const i = this.selectedIndex;
+    const form = this.parentNode.parentNode.parentNode.querySelectorAll("tr");
+
+    const options = document.querySelectorAll("#settings > table tbody tr")[i];
+    const values = options.querySelectorAll("td");
+
+    values.forEach((e, i) => {
+        const tmp = e.getAttribute("data-value")
+        if (i != 0 && i < 3) {
+            form[i + 1].querySelector("input").setAttribute("value", tmp);
+        } else if (i >= 3 && i <= 6) {
+            form[i + 1].querySelector("input").setAttribute("value", Number(tmp));
+        }
+    });
+}
+
+/*******************/
+/* EVENT LISTENERS */
+/*******************/
+tripAddSelect.addEventListener("change", tripSelect);
 
 ///////////////////////////////////////////////////////////////////////////////
 // API                                                                     ///

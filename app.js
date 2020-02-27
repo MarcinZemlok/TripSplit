@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.1
+//       Version: 1.2
 //
 //   Description: TripSplit application server side functionality.
 //
@@ -15,6 +15,9 @@
 // [22/02/2020]        Marcin Żemlok
        Changed the way that new items are send to client. Now full tables are
        rendered by EJS and send.                                             ///
+--------------------------------------------------------------------------------
+// [27/02/2020]        Marcin Żemlok
+        Limit summary results to two digits after dot.                       ///
 //////////////////////////////////////////////////////////////////////////////*/
 const express = require("express");
 const multer = require("multer");
@@ -63,9 +66,6 @@ const Route = mongoose.model("Route", routeSchema);
 const Trip = mongoose.model("Trip", tripSchema);
 const Setting = mongoose.model("Setting", settingSchema);
 
-// var trips = [];
-// var setting = null;
-
 ///////////////////////////////////////////////////////////////////////////////
 // FUNCTIONALITIES                                                         ///
 /////////////////////////////////////////////////////////////////////////////
@@ -90,6 +90,14 @@ function toodayString() {
     year = year.toString();
 
     return `${year}-${month}-${day}`;
+}
+
+function roundTo(x, n) {
+    if (n == 0) return x;
+
+    const tp = Math.pow(10, n);
+
+    return Math.round((x + Number.EPSILON) * tp) / tp;
 }
 
 function computeSummary(trips) {
@@ -138,6 +146,10 @@ function computeSummary(trips) {
 
         summary.timeString += ") / " + key + " ; ";
     }
+
+    // Limit results to two digits after dot.
+    summary.distance = roundTo(summary.distance, 2);
+    summary.cost = roundTo(summary.cost, 2);
 
     summary.timeString = summary.timeString.substr(0, summary.timeString.length - 3);
 
@@ -309,7 +321,7 @@ async function tripAdd(req, res) {
             routeEnd: req.body.routeEnd,
             passengers: req.body.passengers,
             distance: req.body.distance,
-            cost: Math.round((cost + Number.EPSILON) * 100) / 100,
+            cost: roundTo(cost, 2),
             aCost: req.body.aCost
         })
     });
