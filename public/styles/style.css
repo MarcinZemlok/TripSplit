@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.1
+//       Version: 1.2
 //
 //   Description: TripSplit application user interface.
 //
@@ -16,6 +16,10 @@
         * Restructurized document.
         * Fixed tabs scrolling.
         * Changed the way that app looks on desktop and mobile.              ///
+--------------------------------------------------------------------------------
+// [29/02/2020]        Marcin Żemlok
+        * Added mobile navigation.
+        * Added desktop navigation hover.                                    ///
 //////////////////////////////////////////////////////////////////////////////*/
 /*///////////////////////////////////////////////////////////////////////////*/
 /*/ GENERAL                                                                /*/
@@ -163,19 +167,49 @@ form td:first-child {
 /*/////////////////////////////////////////////////////////////////////////*/
 .nav-container {
     height: 100vh;
+    width: 140px;
 
     background-color: black;
     font-size: 1.5rem;
-    text-align: center;
+    /* text-align: center; */
+}
+
+.nav-container-mobile {
+    display: none;
+}
+
+.nav-container-mobile span {
+    display: none;
+}
+
+.nav-container img, .nav-container-mobile img {
+    width: 32px;
+    margin-right: .5rem;
+
+    display: inline-block;
+}
+
+.nav-container span {
+    display: inline-block;
+    position: relative;
+    bottom: 8px;
 }
 
 .mn-button {
     display: block;
 
     color: white;
-    margin: 1rem 1rem .5rem;
+    margin: .5rem 1rem;
     text-decoration: none;
     white-space: nowrap;
+
+    transition: transform .3s;
+}
+
+.mn-button:hover {
+    transform: scale(1.05);
+
+    font-weight: 900;
 }
 
 /*///////////////////////////////////////////////////////////////////////////*/
@@ -308,22 +342,38 @@ tr:nth-child(odd) .settings-button button:hover {
     /* NAVIGATION CONTAINER */
     /************************/
     .nav-container {
-        width: 0;
+        display: none;
+    }
 
-        position: fixed;
-        top: 0;
+    .nav-container-mobile {
+        max-height: 20vh;
+        width: 100vw;
+
+        position: absolute;
+        bottom: 0;
         left: 0;
         z-index: 1;
 
-        /* display: none; */
-        overflow: hidden;
-        transition: width 1s;
+        background-color: black;
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
     }
 
-    .nav-container-visible {
-        width: auto;
+    .nav-container-mobile img {
+        width: 32px;
+        margin: 0;
+    }
 
-        box-shadow: 0 0 0 100vw rgba(0, 0, 0, .7);
+    .mn-button {
+        display: block;
+
+        color: white;
+        margin: .5rem;
+        text-decoration: none;
+        /* white-space: nowrap; */
+
+        transition: transform .3s;
     }
 
     /*********************/

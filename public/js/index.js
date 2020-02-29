@@ -20,6 +20,9 @@
 // [27/02/2020]        Marcin Żemlok
         Added trip select in trip-add form. The form input fields are now
         updating based on selected name.                                     ///
+--------------------------------------------------------------------------------
+// [29/02/2020]        Marcin Żemlok
+        Added update summary on trip remove.                                 ///
 //////////////////////////////////////////////////////////////////////////////*/
 ///////////////////////////////////////////////////////////////////////////////
 // TAB SCROLL                                                              ///
@@ -172,6 +175,11 @@ function settingsUpdateDocument() {
     if (this.readyState === 4 && this.status === 200) {
 
         document.querySelector("#settings > table tbody").innerHTML = this.responseText;
+
+        const _settingsDeleteButtons = document.querySelectorAll(".settingsDelete");
+        _settingsDeleteButtons.forEach((e) => {
+            e.addEventListener("click", settingsDelete);
+        });
     }
 }
 
@@ -228,8 +236,12 @@ function tripAddDocument() {
         document.querySelector("#home > table tbody").innerHTML = res.trips;
         document.querySelector("#home > .summary-container").innerHTML = res.summary;
 
-
         alert("Trip has been added \u2705");
+
+        const _homeDeleteButtons = document.querySelectorAll(".homeDelete");
+        _homeDeleteButtons.forEach((e) => {
+            e.addEventListener("click", homeDelete);
+        });
     }
 }
 
@@ -282,11 +294,15 @@ function homeDeleteDocument() {
 
     if (this.readyState === 4 && this.status === 200) {
 
-        const removeButton = document.querySelector(`#home button[value="${this.responseText}"]`);
+        const res = JSON.parse(this.responseText);
+
+        const removeButton = document.querySelector(`#home button[value="${res.idToRemove}"]`);
 
         const removeRow = removeButton.parentNode.parentNode;
 
         const settingsTable = removeRow.parentNode;
+
+        document.querySelector("#home > .summary-container").innerHTML = res.summary;
 
         settingsTable.removeChild(removeRow);
     }

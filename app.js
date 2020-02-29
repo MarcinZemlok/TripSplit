@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.2
+//       Version: 1.3
 //
 //   Description: TripSplit application server side functionality.
 //
@@ -18,6 +18,10 @@
 --------------------------------------------------------------------------------
 // [27/02/2020]        Marcin Żemlok
         Limit summary results to two digits after dot.                       ///
+--------------------------------------------------------------------------------
+// [29/02/2020]        Marcin Żemlok
+        * Update Summary when the trip is removed.
+        * Moved fetching database data to functions get(Setting/Trip).       ///
 //////////////////////////////////////////////////////////////////////////////*/
 const express = require("express");
 const multer = require("multer");
@@ -75,6 +79,34 @@ function connectDB() {
 
 function disconnectDB() {
     mongoose.connection.close();
+}
+
+function getSetting() {
+    return new Promise(resolve => { // Get settings
+        Setting.findOne(null, (err, obj) => {
+            if (err) {
+                console.log(err);
+
+            } else {
+                resolve(obj);
+            }
+        })
+    });
+}
+
+function getTrips() {
+    return new Promise(resolve => { // Get trips
+        Trip.find({ payed: false })
+            .sort([["trip.date", -1]])
+            .exec((err, obj) => {
+                if (err) {
+                    console.log(err);
+
+                } else {
+                    resolve(obj);
+                }
+            })
+    });
 }
 
 function toodayString() {
@@ -202,29 +234,9 @@ async function get(req, res) {
 
     await initDefault();
 
-    const setting = await new Promise(resolve => { // Get settings
-        Setting.findOne(null, (err, obj) => {
-            if (err) {
-                console.log(err);
+    const setting = await getSetting();
 
-            } else {
-                resolve(obj);
-            }
-        })
-    });
-
-    const trips = await new Promise(resolve => { // Get trips
-        Trip.find({ payed: false })
-            .sort([["trip.date", -1]])
-            .exec((err, obj) => {
-                if (err) {
-                    console.log(err);
-
-                } else {
-                    resolve(obj);
-                }
-            })
-    });
+    const trips = await getTrips();
 
     disconnectDB();
 
@@ -265,16 +277,7 @@ async function settingsUpdate(req, res) {
         { $push: { routes: newSettinsRoute } }
     );
 
-    const setting = await new Promise(resolve => { // Get settings
-        Setting.findOne(null, (err, obj) => {
-            if (err) {
-                console.log(err);
-
-            } else {
-                resolve(obj);
-            }
-        })
-    });
+    const setting = await getSetting();
 
     disconnectDB();
 
@@ -330,18 +333,7 @@ async function tripAdd(req, res) {
 
     await newTrip.save();
 
-    const trips = await new Promise(resolve => { // Get trips
-        Trip.find({ payed: false })
-            .sort([["trip.date", -1]])
-            .exec((err, obj) => {
-                if (err) {
-                    console.log(err);
-
-                } else {
-                    resolve(obj);
-                }
-            })
-    });
+    const trips = await getTrips();
 
     disconnectDB();
 
@@ -398,9 +390,25 @@ async function homeDelete(req, res) {
 
     await Trip.findByIdAndDelete(idToRemove);
 
+    const trips = await getTrips();
+
     disconnectDB();
 
-    res.status(200).send(idToRemove);
+    const date = toodayString();
+
+    const summary = computeSummary(trips);
+
+    const resJSON = {
+        idToRemove: idToRemove,
+        summary: {}
+    };
+
+    resJSON.summary = await ejs.renderFile(__dirname + '/views/partials/summary.ejs', {
+        date: date,
+        summary: summary
+    });
+
+    res.status(200).send(resJSON);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

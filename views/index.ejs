@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.1
+//       Version: 1.2
 //
 //   Description: TripSplit application user interface.
 //
@@ -15,14 +15,30 @@
 // [22/02/2020]        Marcin Żemlok
         * Changed forms layout.
         * Tables rows and summary are rendered from partials.                ///
+--------------------------------------------------------------------------------
+// [29/02/2020]        Marcin Żemlok
+        * Added mobile navigation.
+        * Upgrated desktop navigation with icons and hover.                  ///
 /////////////////////////////////////////////////////////////////////////////-->
 
 <%- include ("partials/header") -%>
 
 <div class="nav-container">
-    <a href="#home" class="mn-button">Home</a>
+    <!-- <a href="#home" class="mn-button">Home</a>
     <a href="#trip" class="mn-button">Add New</a>
-    <a href="#settings" class="mn-button">Settings</a>
+    <a href="#settings" class="mn-button">Settings</a> -->
+    <a href="#home" class="mn-button"><img src="img/home-white.png"><span>Home</span>
+    </a>
+    <a href="#trip" class="mn-button"><img src="img/plus-white.png"><span>New Trip</span>
+    </a>
+    <a href="#settings" class="mn-button"><img src="img/gear-white.png"><span>Settings</span></a>
+</div>
+<div class="nav-container-mobile">
+    <a href="#home" class="mn-button"><img src="img/home-white.png">
+    </a>
+    <a href="#trip" class="mn-button"><img src="img/plus-white.png">
+    </a>
+    <a href="#settings" class="mn-button"><img src="img/gear-white.png"></a>
 </div>
 
 <!----------------------------------------------------------------------------->
