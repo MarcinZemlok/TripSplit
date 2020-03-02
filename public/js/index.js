@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.2
+//       Version: 1.3
 //
 //   Description: TripSplit application client side functionality.
 //
@@ -23,6 +23,9 @@
 --------------------------------------------------------------------------------
 // [29/02/2020]        Marcin Żemlok
         Added update summary on trip remove.                                 ///
+--------------------------------------------------------------------------------
+// [02/03/2020]        Marcin Żemlok
+        Added choose default route functionality.                            ///
 //////////////////////////////////////////////////////////////////////////////*/
 ///////////////////////////////////////////////////////////////////////////////
 // TAB SCROLL                                                              ///
@@ -132,10 +135,10 @@ async function tripSelect() { // Set rest of the form input values acording to s
 
     values.forEach((e, i) => {
         const tmp = e.getAttribute("data-value")
-        if (i != 0 && i < 3) {
-            form[i + 1].querySelector("input").setAttribute("value", tmp);
-        } else if (i >= 3 && i <= 6) {
-            form[i + 1].querySelector("input").setAttribute("value", Number(tmp));
+        if (i > 1 && i < 4) {
+            form[i].querySelector("input").setAttribute("value", tmp);
+        } else if (i >= 4 && i <= 7) {
+            form[i].querySelector("input").setAttribute("value", Number(tmp));
         }
     });
 }
@@ -167,6 +170,7 @@ function httpRequest(reqType, url, data, callback) {
 /* CONSTANTS */
 const settingsUpdateForm = document.querySelector("#settings-form");
 const settingsDeleteButtons = document.querySelectorAll(".settingsDelete");
+const settingsUpdateDefault = document.querySelectorAll("input[name=defaultRoute]")
 
 var i = 0;
 /* FUNCTIONS */
@@ -197,6 +201,13 @@ function settingsDeleteDocument() {
     }
 }
 
+function settingsUpdateDefaultDocument() {
+    if (this.readyState === 4 && this.status === 200) {
+        console.log("New default route saved");
+        location.reload()
+    }
+}
+
 /* HANDLERS */
 async function settingsUpdate() {
     event.returnValue = false;
@@ -215,10 +226,22 @@ async function settingsDelete() {
     httpRequest("DELETE", "/settings", data, settingsDeleteDocument);
 }
 
+async function defaultUpdate() {
+    event.returnValue = false;
+
+    const data = new FormData();
+    data.append("defaultUpdate", this.value);
+
+    httpRequest("PUT", "/settings", data, settingsUpdateDefaultDocument);
+}
+
 /* EVENT LISTENERS */
 settingsUpdateForm.addEventListener("submit", settingsUpdate);
 settingsDeleteButtons.forEach((e) => {
     e.addEventListener("click", settingsDelete);
+});
+settingsUpdateDefault.forEach((e) => {
+    e.addEventListener("change", defaultUpdate);
 });
 
 /********/

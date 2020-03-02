@@ -1,5 +1,14 @@
-<% setting.routes.forEach((r) => { %>
+<% setting.routes.forEach((r, i) => { %>
 <tr>
+    <% if (i == setting.dri) { %>
+    <td>
+        <input type="radio" name="defaultRoute" value="<%= i %>" checked>
+    </td>
+    <% } else { %>
+    <td>
+        <input type="radio" name="defaultRoute" value="<%= i %>">
+    </td>
+    <% } %>
     <td><%= r.name %></td>
     <td class="not-mobile" data-value="<%= r.routeStart %>"><%= r.routeStart %></td>
     <td class="not-mobile" data-value="<%= r.routeEnd %>"><%= r.routeEnd %></td>

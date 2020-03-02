@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.2
+//       Version: 1.3
 //
 //   Description: TripSplit application user interface.
 //
@@ -20,6 +20,10 @@
 // [29/02/2020]        Marcin Żemlok
         * Added mobile navigation.
         * Added desktop navigation hover.                                    ///
+--------------------------------------------------------------------------------
+// [02/03/2020]        Marcin Żemlok
+        * Added choose default route functionality.
+        * Fixed mobile menu at the bottom of the screen.                     ///
 //////////////////////////////////////////////////////////////////////////////*/
 /*///////////////////////////////////////////////////////////////////////////*/
 /*/ GENERAL                                                                /*/
@@ -349,7 +353,7 @@ tr:nth-child(odd) .settings-button button:hover {
         max-height: 20vh;
         width: 100vw;
 
-        position: absolute;
+        position: fixed;
         bottom: 0;
         left: 0;
         z-index: 1;

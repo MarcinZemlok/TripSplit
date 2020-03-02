@@ -3,7 +3,7 @@
 //============================================================================//
 //        Author: Marcin Żemlok
 //         Email: marcinzemlok@gmail.com
-//       Version: 1.3
+//       Version: 1.4
 //
 //   Description: TripSplit application server side functionality.
 //
@@ -22,6 +22,9 @@
 // [29/02/2020]        Marcin Żemlok
         * Update Summary when the trip is removed.
         * Moved fetching database data to functions get(Setting/Trip).       ///
+--------------------------------------------------------------------------------
+// [02/03/2020]        Marcin Żemlok
+        Added choose default route functionality.                            ///
 //////////////////////////////////////////////////////////////////////////////*/
 const express = require("express");
 const multer = require("multer");
@@ -63,6 +66,7 @@ const tripSchema = mongoose.Schema({
 });
 
 const settingSchema = mongoose.Schema({
+    dri: Number,
     routes: [routeSchema]
 });
 
@@ -260,6 +264,21 @@ async function get(req, res) {
 /* HANDLERS */
 async function settingsUpdate(req, res) {
 
+    if (req.body.defaultUpdate != undefined) {
+        connectDB()
+
+        await Setting.updateOne(
+            null,
+            { dri: req.body.defaultUpdate }
+        );
+
+        const setting = await getSetting();
+
+        disconnectDB();
+
+        res.status(200).send();
+    }
+
     const newSettinsRoute = new Route({
         name: req.body.routeName,
         routeStart: req.body.routeStart,
@@ -281,7 +300,6 @@ async function settingsUpdate(req, res) {
 
     disconnectDB();
 
-    // res.status(200).send(newSettinsRoute);
     res.render('partials/routes', {
         setting: setting
     });
