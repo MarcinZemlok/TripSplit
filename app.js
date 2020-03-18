@@ -13,8 +13,8 @@
        Initial change log entry.                                             ///
 --------------------------------------------------------------------------------
 // [22/02/2020]        Marcin Żemlok
-       Changed the way that new items are send to client. Now full tables are
-       rendered by EJS and send.                                             ///
+        Changed the way that new items are send to client. Now full tables are
+        rendered by EJS and send.                                             ///
 --------------------------------------------------------------------------------
 // [27/02/2020]        Marcin Żemlok
         Limit summary results to two digits after dot.                       ///
@@ -25,7 +25,11 @@
 --------------------------------------------------------------------------------
 // [02/03/2020]        Marcin Żemlok
         Added choose default route functionality.                            ///
+--------------------------------------------------------------------------------
+// [18/03/2020]        Marcin Żemlok
+        Moved MongoDB login credentials to .env folder.                      ///
 //////////////////////////////////////////////////////////////////////////////*/
+require("dotenv").config()
 const express = require("express");
 const multer = require("multer");
 const ejs = require("ejs");
@@ -78,7 +82,14 @@ const Setting = mongoose.model("Setting", settingSchema);
 // FUNCTIONALITIES                                                         ///
 /////////////////////////////////////////////////////////////////////////////
 function connectDB() {
-    mongoose.connect("mongodb+srv://admin:admin@cluster0-xtsjl.gcp.mongodb.net/trip", { useNewUrlParser: true, useUnifiedTopology: true });
+    const mongoname = process.env.MONGODB_USERNAME;
+    const mongopass = process.env.MONGODB_PASSWORD;
+    mongoose.connect(
+        `mongodb+srv://${mongoname}:${mongopass}@cluster0-xtsjl.gcp.mongodb.net/trip`,
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
 }
 
 function disconnectDB() {
